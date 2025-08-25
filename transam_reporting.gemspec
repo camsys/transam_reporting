@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
 
   # PDF
   s.add_dependency "wicked_pdf"
-  s.add_dependency "wkhtmltopdf-binary"
+  s.add_dependency "wkhtmltopdf-binary", "0.12.6.9" # 0.12.6.10 causes an error on deploy
   s.add_dependency "chartkick", "3.4.2"
   
   s.add_development_dependency "rspec-rails"
