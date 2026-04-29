@@ -28,7 +28,11 @@ class ReportingReportsController < ReportsController
   end
 
   def details
-    @data = @report.class_name.constantize.get_detail_data(@organization_list, params)
+    if @report.class_name == "DisposedAssetsReport"
+      @data = @report.class_name.constantize.get_detail_data(params[:key].split("...")[0], Organization.find_by(name: params[:key].split("...")[1]).id, params)
+    else
+      @data = @report.class_name.constantize.get_detail_data(@organization_list, params)
+    end
     @key = params[:key]
     @details_view = params[:view]
     render 'reports/report_details'

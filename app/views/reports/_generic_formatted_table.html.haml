@@ -7,4 +7,11 @@
       - @data[:data].each do |row|
         %tr
           - row.zip(@data[:formats]).each do |col, format|
-            %td{class: table_class_from_format(format)}= format_using_format(col, format)
+            - if format == :object_url
+              - object_url = @report.class_name.constantize.get_object_url(row)
+              - if object_url
+                %td{class: 'left'}= link_to col, object_url
+              -else
+                %td{class: 'left'}
+            - else
+              %td{class: table_class_from_format(format)}= format_using_format(col, format)
