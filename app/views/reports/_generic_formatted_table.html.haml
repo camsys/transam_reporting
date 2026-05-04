@@ -2,16 +2,20 @@
   %thead
     %tr
       - @data[:labels].each_with_index do |label, i|
-        %th{class: table_class_from_format(@data[:formats][i])}= label
+        - unless @data[:formats][i] == :hidden
+          %th{class: table_class_from_format(@data[:formats][i])}= label
     %tbody
       - @data[:data].each do |row|
         %tr
           - row.zip(@data[:formats]).each do |col, format|
-            - if format == :object_url
-              - object_url = @report.class_name.constantize.get_object_url(row)
-              - if object_url
-                %td{class: 'left'}= link_to col, object_url
-              -else
-                %td{class: 'left'}
-            - else
-              %td{class: table_class_from_format(format)}= format_using_format(col, format)
+            - unless format == :hidden
+              - if format == :object_url
+                - object_url = @report.class_name.constantize.get_object_url(row)
+                - if object_url
+                  %td{class: 'left'}= link_to col, object_url
+                -else
+                  %td{class: 'left'}
+              - elsif format == :flag
+                %td{class: 'left'}= '&#128681;'.html_safe if col
+              - else
+                %td{class: table_class_from_format(format)}= format_using_format(col, format)
