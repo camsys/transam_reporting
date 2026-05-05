@@ -32,6 +32,9 @@
       // the corresponding panel
       if ($(this).hasClass('selected')) {
         var url = report_detail_path.replace('xxx', target_key);
+        if(url.includes("&amp;")) {
+          url = url.replaceAll("&amp;", "&");
+        }
         // AJAX load the panel
         $.ajax({
             url: url,

@@ -1,3 +1,3 @@
 module TransamReporting
-  VERSION = "2.59.0"
+  VERSION = "2.67.0-rc"
 end
