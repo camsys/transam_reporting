@@ -13,7 +13,8 @@
         = text_field_tag "#{action[:where].to_s}", params[action[:where]], :class => 'datepicker'
       -	elsif action[:type] == :text_field
         = action[:label]
-        = text_field_tag "#{action[:where].to_s}", params[action[:where]].blank? ? action[:value] : params[action[:where]]
+        -# If the filter parameter is part of the request, but is a blank value, then use the action's :blank_value attribute if it exists. Otherwise, default to the actions :value attribute.
+        = text_field_tag "#{action[:where].to_s}", params[action[:where]].blank? ? (action.has_key?(:blank_value) && params.has_key?(action[:where]) ? action[:blank_value] : action[:value]) : params[action[:where]]
   = button_tag :class => 'btn btn-success', :type => 'submit' do
     %i.fa.fa-filter
 
