@@ -7,12 +7,54 @@
           = "#{value.to_s.titleize}&nbsp;&nbsp;".html_safe
       -	elsif action[:type] == :select
         = action[:label]
-        = select_tag "#{action[:where].to_s}", options_for_select(action[:values], params[action[:where]])
+        = select_tag "#{action[:where].to_s}", options_for_select(action[:values], params[action[:where]] || action[:default])
       -	elsif action[:type] == :datepicker
         = action[:label]
         = text_field_tag "#{action[:where].to_s}", params[action[:where]], :class => 'datepicker'
       -	elsif action[:type] == :text_field
         = action[:label]
-        = text_field_tag "#{action[:where].to_s}", params[action[:where]].blank? ? action[:value] : params[action[:where]]
+        -# If the filter parameter is part of the request, but is a blank value, then use the action's :blank_value attribute if it exists. Otherwise, default to the actions :value attribute.
+        = text_field_tag "#{action[:where].to_s}", params[action[:where]].blank? ? (action.has_key?(:blank_value) && params.has_key?(action[:where]) ? action[:blank_value] : action[:value]) : params[action[:where]]
   = button_tag :class => 'btn btn-success', :type => 'submit' do
     %i.fa.fa-filter
+
+:javascript
+  if ($('#asset_class').length > 0 && $('#asset_type').length > 0) {
+    var fta_types_by_class = #{FtaAssetClass.all.each_with_object({}){|c, h| h[c.id] = (
+      case c.class_name
+      when 'RevenueVehicle'
+        FtaVehicleType
+      when 'ServiceVehicle'
+        FtaSupportVehicleType
+      when 'CapitalEquipment'
+        FtaEquipmentType
+      when 'Facility'
+        FtaFacilityType
+      when 'Guideway'
+        FtaGuidewayType
+      when 'PowerSignal'
+        FtaPowerSignalType
+      when 'Track'
+        FtaTrackType
+      end)
+      .active.where(fta_asset_class: c).order(:name).collect{|t| {value: t.id, text: t.to_s}}}.to_json.html_safe};
+
+    function populate_asset_types(asset_class_id) {
+      $("#asset_type").empty();
+      if (typeof (fta_types_by_class[asset_class_id]) != "undefined") {
+        $("#asset_type").append("<option value></option>");
+        fta_types_by_class[asset_class_id].forEach(function(type) {
+          $("#asset_type").append("<option value = '" + type["value"] + "'>" + type['text'] + "</option>");
+        });
+      }
+    }
+
+    $('#asset_class').on('change', function() {
+      populate_asset_types($(this).val())
+    });
+
+    $(document).ready(function() {
+      populate_asset_types($('#asset_class').val());
+      $('#asset_type').val(#{params[:asset_type]})
+    });
+  }
