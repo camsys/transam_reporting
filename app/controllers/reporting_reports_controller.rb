@@ -8,6 +8,7 @@ class ReportingReportsController < ReportsController
   def show
     handle_show do
       @actions = @report_instance.try(:get_actions)
+      @report_params = @report_instance.class.try(:allowable_params)
       
       sanitized_report_name = @report.to_s.parameterize(separator: '_')
 
