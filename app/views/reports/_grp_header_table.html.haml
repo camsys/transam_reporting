@@ -1,0 +1,19 @@
+#spinner= loader_panel_tag({:message => "Loading...", :size => 3, :spinner => "cog"})
+
+#wrapper
+  .col-md-12#full_report
+    %h1 #{@data[:top_header]}
+    - @data[:data].each do |group|
+      - group_name = group.first
+      - rows = group.second
+      - data = {labels: @data[:labels], data: rows, formats: @data[:formats]}
+      .report
+        %fieldset
+          %legend= format_using_format(group_name, @data[:header_format] || :string)
+          = render partial: 'reports/generic_subtable.html', locals: {data: data}
+
+:javascript
+  $(document).ready(function() {
+    // Hide the processing div
+    $('#spinner').hide();
+  });
