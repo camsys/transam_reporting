@@ -3,6 +3,12 @@
 #wrapper
   .col-md-12#full_report
     %h1 #{@data[:top_header]}
+    - if @data[:summary_table]
+      - data = {labels: @data[:summary_table][:labels], data: @data[:summary_table][:table_data], formats: @data[:summary_table][:formats]}
+      .report
+        %fieldset
+          %legend= format_using_format(@data[:summary_table][:table_header], @data[:header_format] || :string)
+          = render partial: 'reports/generic_subtable.html', locals: {data: data}
     - @data[:data].each do |group|
       - group_name = group.first
       - rows = group.second
